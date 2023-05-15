@@ -1,0 +1,136 @@
+const course = require("../models/course");
+let courses = require("../models/course");
+
+module.exports = function (app) {
+
+
+    //Course ophalen aan courseId.
+  app.get("/course", async (req, res) => {
+    // Get body from request
+    let body = req.body;
+
+    const foundCourse = await courses.findOne({ _id: body._id,  }).populate("exercises");
+    if (!foundCourse) return res.status(404).send("Course not found");
+    return res.status(200).json(foundCourse);
+
+  });
+
+
+  //Alle Courses van een teacher ophalen met teacherID.
+  app.get("/getallcourses", async (req, res) => {
+    // Get body from request
+    let body = req.body;
+
+    const foundCourses = await courses.find({ teacherId: body.teacherId,  }).populate("exercises");
+    if (!foundCourses) return res.status(404).send("Course not found");
+    return res.status(200).json(foundCourses);
+
+  });
+
+  //Course aanmaken.
+  app.post("/course", async (req, res) => {
+    //Get body from request
+    let body = req.body;
+
+    //Create course
+    let course = new courses({
+        title : body.title,
+        description: body.description,
+        teacherId : body.teacherId,
+    });
+
+    //Save course to database
+    await course.save().then((savedCourse) => {
+        res.status(201).json(savedCourse);
+      })
+      .catch((err) => {
+        res.status(400).send(err.errors);
+      });
+  });
+
+
+  //Course verwijderen.
+  app.delete("/course", async (req, res) => {
+    let body = req.body;
+
+    courses
+      .findOne({ _id: body._id })
+      .then((foundCourse) => {
+        // Remove course from database
+        courses
+          .findByIdAndDelete(foundCourse._id)
+          .then((deletedCourse) => {
+            return res.status(200).send("Course removed");
+          })
+          .catch((err) => {
+            return res.status(400).send(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(404).send("Course not found");
+      });
+  });
+
+
+  //Course updaten.
+  app.put("/course", async (req, res) => {
+    let body = req.body;
+
+    courses
+      .findOne({ _id: body._id })
+      .then(async (foundCourse) => {
+        if (body.title) foundCourse.title = body.title;
+        if (body.description) foundCourse.description = body.description;
+
+        await courses.updateOne(foundCourse);
+        await foundCourse.save();
+
+        res.status(201).json("Course updated");
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(404).send("Course not found");
+      });
+  });
+
+  //Exercise toevoegen aan course.
+  app.post("/addexercise", async (req, res) => {
+    let body = req.body;
+
+    courses
+      .findOne({ _id: body._id })
+      .then(async (foundCourse) => {
+
+        foundCourse.exercises.push(body.exerciseId)
+
+        await foundCourse.save();
+
+        res.status(201).json("Exercise added");
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(404).send("Course not found");
+      });
+  });
+
+  //Exercise verwijderen uit course.
+  app.post("/removeexercise", async (req, res) => {
+    let body = req.body;
+
+    courses
+      .findOne({ _id: body._id })
+      .then(async (foundCourse) => {
+        foundCourse.exercises.splice(body.exerciseId)
+
+        await foundCourse.save();
+
+        res.status(201).json("Exercise removed");
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(404).send("Course not found");
+      });
+  });
+
+};

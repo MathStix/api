@@ -7,7 +7,8 @@ const exerciseSchema = new mongoose.Schema({
     location: String,
     photo: String,
     activationRange: String,
-    exerciseType: String
+    exerciseType: String,
+    teacherId: { type: mongoose.Schema.Types.ObjectId, ref: 'Teacher'},
 
 }, { collection: 'exercises' });
 

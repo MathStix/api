@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const express = require('express');
 const app = express();
+const websocket = require("express-ws")(app);
 const bodyParser = require('body-parser');
 
 require("dotenv").config();
@@ -20,6 +21,10 @@ async function init() {
     });
 
     require("./controllers/teacherController")(app);
+    require("./controllers/exerciseController")(app);
+    require("./controllers/gameController")(app);
+    require("./controllers/courseController")(app);
+    require("./controllers/websocketController")(app);
 }
 
 init()
