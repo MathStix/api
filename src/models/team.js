@@ -10,4 +10,4 @@ const teamSchema = new mongoose.Schema({
     
 }, { collection: 'teams' });
 
-module.exports = mongoose.model('Team', courseSchema);
+module.exports = mongoose.model('Team', teamSchema);
