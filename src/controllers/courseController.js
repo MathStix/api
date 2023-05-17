@@ -1,4 +1,3 @@
-const course = require("../models/course");
 let courses = require("../models/course");
 
 module.exports = function (app) {

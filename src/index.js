@@ -21,6 +21,7 @@ async function init() {
     });
 
     require("./controllers/teacherController")(app);
+    require("./controllers/playerController")(app);
     require("./controllers/exerciseController")(app);
     require("./controllers/courseController")(app);
     require("./controllers/gameController")(app);

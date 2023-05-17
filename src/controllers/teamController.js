@@ -1,60 +1,90 @@
+//Imprt methods van TeamUtils.
 const { splitArray, rearangeArray, setUnlockedExerciseIdsOnTeamCreation } = require('../BuisnessLogic/TeamUtils');
-const teams = require('../models/team');
 
-//random name generator
+//random name generator.
 const { uniqueNamesGenerator, adjectives, colors, animals } = require('unique-names-generator');
-const shortName = uniqueNamesGenerator({
-    dictionaries: [adjectives, animals, colors], // colors can be omitted here as not used
-    length: 2
-});
+
+const teams = require('../models/team');
+const games = require('../models/game');
+const courses = require("../models/course");
 
 
 module.exports = function (app) {
 
-
     app.post("/team", async (req, res) => {
         let body = req.body;
 
-        //game voorbeeld.
-        let playersinGame = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-        let totalExerciseIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+        let currentGame = [];
+        let currentCourse = [];
 
-        //array door elkaar husselen.
-        playersinGame = rearangeArray(playersinGame)
+        //huidige Game ophalen.
+        await games.findOne({ _id: body.gameId })
+            .then((foundGame) => {
 
-        //teams indelen aan de hand van meegegeven "playersPerteam".
-        const devidedTeams = splitArray(playersinGame, await body.playersPerTeam);
+                //als de game al teams heeft, remove alle teams zodat er nieuwe kunnen worden aangemaakt.
+                if (foundGame.teamIds || foundGame.teamIds.length > 0) {
+                    //huidige teams verwijderen uit teams column.
+                    foundGame.teamIds.forEach(async (team) => {
+                        await teams.findByIdAndDelete(team._id)
+                    });
 
-        //unlocked aantal exercises ophalen.
-        const devidedExercises = rearangeArray(totalExerciseIds);
-        const unlockedExerciseIds = setUnlockedExerciseIdsOnTeamCreation(devidedExercises);
-
-        //game opdelen in teams.
-        devidedTeams.forEach(async (element) => {
-
-            let team = new teams({
-                name: shortName,
-                playerIds: element,
-                unlockedExerciseIds: unlockedExerciseIds,
+                    //teams uit game verwijderen.
+                    foundGame.teamIds = [];
+                }
+                currentGame = foundGame;
             });
 
-            console.log(team);
+        //huidige Course ophalen.
+        await courses.findOne({ _id: currentGame.courseId })
+            .then((foundCourse) => {
+                currentCourse = foundCourse;
+            });
 
-            //!!! nog doen !!!
+        //players in Game.
+        let playersinGame = currentGame.playerIds;
 
-            //huidige game ophalen
-            //team opslaan in een game
+        //array door elkaar husselen.
+        playersinGame = rearangeArray(playersinGame);
 
-            //!!! nog doen !!!
+        //teams indelen aan de hand van meegegeven "playersPerteam".
+        const devidedTeams = splitArray(playersinGame, body.playersPerTeam);
 
-            // await team.save().then( () => {
-            //     res.status(201).json("team created");
-            // }).catch((err) => {
-            //     res.status(400).send(err.errors);
-            // });
-        });
+        if (!devidedTeams || devidedTeams.length == 0) { res.status(400).send("Not enough players"); }
+        else {
+            //game opdelen in teams.
+            devidedTeams.forEach(async (players) => {
+                //random name generator
+                const shortName = uniqueNamesGenerator({
+                    dictionaries: [adjectives, animals, colors],
+                    length: 2
+                });
+                //unlocked aantal exercises ophalen.
+                const devidedExercises = rearangeArray(currentCourse.exercises);
+                const unlockedExerciseIds = setUnlockedExerciseIdsOnTeamCreation(devidedExercises);
 
-        res.status(201).json("team created");
+                let team = new teams({
+                    name: shortName,
+                    playerIds: players,
+                    unlockedExerciseIds: unlockedExerciseIds,
+                });
+                currentGame.teamIds.push(team._id);
+
+                //team opslaan.
+                await team.save();
+            });
+
+            //teams toevoegen aan Game.
+            if (!currentGame.teamIds || currentGame.teamIds.length > 0) {
+                await currentGame.save().then(() => {
+                    res.status(201).json("teams saved");
+                }).catch((err) => {
+                    res.status(400).send(err.errors);
+                });
+            }
+            else {
+                res.status(400).send("No teams");
+            }
+        }
     });
 
 }
