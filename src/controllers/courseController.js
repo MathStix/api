@@ -120,7 +120,7 @@ module.exports = function (app) {
     courses
       .findOne({ _id: body._id })
       .then(async (foundCourse) => {
-        foundCourse.exercises.splice(body.exerciseId)
+        foundCourse.exercises.splice(foundCourse.exercises.indexOf(body.exerciseId), 1);
 
         await foundCourse.save();
 

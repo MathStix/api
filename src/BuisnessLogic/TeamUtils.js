@@ -52,4 +52,18 @@ function setUnlockedExerciseIdsOnTeamCreation(totalExerciseIds) {
     }
 }
 
-module.exports = { splitArray, rearangeArray, setUnlockedExerciseIdsOnTeamCreation }
+function GuessWord(word, guessword) {
+    const letterAndPosition = [];
+
+    for (let i = 0; i < word.length; i++) {
+        const letter = word[i];
+
+        if (guessword.includes(letter)) {
+            letterAndPosition.push({ position: i, letter: letter });
+        }
+    }
+
+    return letterAndPosition;
+}
+
+module.exports = { splitArray, rearangeArray, setUnlockedExerciseIdsOnTeamCreation, GuessWord }
