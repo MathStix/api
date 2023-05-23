@@ -4,9 +4,13 @@ module.exports = function (app) {
 
     app.post("/game", async (req, res) => {
         let body = req.body;
+        // Verwachte parameters:
+        // courseId: String,
+        // word: String,
 
         let game = new games({
             courseId: body.courseId,
+            word: body.word.toLowerCase()
         });
 
         await game.save().then((savedGame) => {

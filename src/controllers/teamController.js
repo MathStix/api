@@ -23,7 +23,7 @@ module.exports = function (app) {
 
         //huidige Game ophalen.
         await games.findOne({ _id: body.gameId })
-            .then((foundGame) => {
+            .then(async (foundGame) => {
 
                 //als de game al teams heeft, remove alle teams zodat er nieuwe kunnen worden aangemaakt.
                 if (foundGame.teamIds || foundGame.teamIds.length > 0) {
@@ -36,12 +36,12 @@ module.exports = function (app) {
                     foundGame.teamIds = [];
                 }
                 currentGame = foundGame;
-            });
 
-        //huidige Course ophalen.
-        await courses.findOne({ _id: currentGame.courseId })
-            .then((foundCourse) => {
-                currentCourse = foundCourse;
+                //huidige Course ophalen.
+                await courses.findOne({ _id: currentGame.courseId })
+                    .then((foundCourse) => {
+                        currentCourse = foundCourse;
+                    });
             });
 
         //players in Game.
@@ -132,44 +132,53 @@ module.exports = function (app) {
         // Verwachte parameters:
         // gameId: String,
         // teamId: String,
+        // guessWord: String
 
-        //woord nog ophalen uit game.
-        const word = 'wiskunde';
-        const now = new Date();
+        let word = "";
         let currentTeam = [];
+        const now = new Date();
 
-        await teams
-            .findOne({ _id: body.teamId })
-            .then(async (foundTeam) => {
+        //elke foute guess telt 3 minuten straftijd erbij op en krijgt een guess cooldown van 4 minuten.
+        const extraTimePenalty = 3;
+        const extraGuessCooldown = new Date(now.getTime() + 4 * 60000).toString();
 
-                currentTeam = foundTeam;
+        await games
+            .findOne({ _id: body.gameId })
+            .then(async (foundGame) => {
+
+                word = foundGame.word;
+
+                await teams
+                    .findOne({ _id: body.teamId })
+                    .then((foundTeam) => {
+
+                        currentTeam = foundTeam;
+                    })
             })
 
         //check of het team alweer mag raden ivm de timepenalty.
         if (new Date(now.getTime()) > new Date(currentTeam.guessCooldown) || currentTeam.guessCooldown === undefined) {
-            const includingLetters = GuessWord(word, body.guessWord);
+            //const includingLetters = GuessWord(word, body.guessWord);
 
             //check of het gegokte woord overeenkomt met het game woord.
-            if (word !== body.guessWord) {
+            if (word !== body.guessWord.toLowerCase()) {
 
-                //elke foute guess telt 3 minuten straftijd erbij op en krijgt een guess cooldown van 4 minuten.
-                if (currentTeam.timePenalty === undefined) { currentTeam.timePenalty = 3; }
-                else { currentTeam.timePenalty += 3; }
+                if (currentTeam.timePenalty === undefined) { currentTeam.timePenalty = extraTimePenalty; }
+                else { currentTeam.timePenalty += extraTimePenalty; }
 
-                const guessCooldown = new Date(now.getTime() + 4 * 60000);
-                currentTeam.guessCooldown = guessCooldown.toString();
+                currentTeam.guessCooldown = extraGuessCooldown;
 
                 await currentTeam.save();
 
-                res.status(204).json(includingLetters);
+                res.status(400).json("Wrong guess");
             }
             else {
                 //team heeft woord geraden, nog wat voor verzinnen.
-                res.status(200).json(includingLetters);
+                res.status(200).json("Right guess");
             }
         }
         else {
-            res.status(400).json("Wait out timepenalty");
+            res.status(404).json("Wait out timepenalty");
         }
     });
 
