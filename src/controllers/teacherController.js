@@ -2,10 +2,26 @@ let teachers = require('../models/teacher');
 
 module.exports = function (app) {
 
+    app.get("/teacher/:id", async (req, res) => {
+        let id = req.params.id;
+        // Verwachte parameters:
+        // _id: String,
+
+        teachers.findById(id).then((foundTeacher) => {
+            res.status(200).json(foundTeacher);
+        }).catch((err) => {
+            console.log(err);
+            res.status(404).send("Teacher not found");
+        });
+    });
+
     //Teacher aanmaken/registreren.
     app.post('/teacher', async (req, res) => {
-        // Get body from request
         let body = req.body;
+        // Verwachte parameters:
+        // fullName: String,
+        //  email: String,
+        //  password: String,
 
         // Create teacher 
         let teacher = new teachers({
@@ -30,6 +46,9 @@ module.exports = function (app) {
     //Inloggen
     app.post('/login', async (req, res) => {
         let body = req.body;
+        // Verwachte parameters:
+        //  email: String,
+        //  password: String,
 
         teachers.findOne({ email: body.email }).then((foundTeacher) => {
             foundTeacher.comparePassword(body.password, function (err, isMatch) {
@@ -47,6 +66,10 @@ module.exports = function (app) {
     //Teacher verwijderen
     app.delete('/teacher', async (req, res) => {
         let body = req.body;
+        // Verwachte parameters:
+        // _id: String,
+        //  email: String,
+        //  password: String,
 
         teachers.findOne({ email: body.email }).then((foundTeacher) => {
             foundTeacher.comparePassword(body.password, function (err, isMatch) {
@@ -69,6 +92,11 @@ module.exports = function (app) {
     //Teacher updaten (fullname, email en wachtwoord los).
     app.put('/teacher', async (req, res) => {
         let body = req.body;
+        // Verwachte parameters:
+        // _id: String,
+        //  fullName: String,
+        //  email: String,
+        //  password: String,
 
         teachers.findOne({ email: body.email }).then(async (foundTeacher) => {
 

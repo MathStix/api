@@ -3,12 +3,13 @@ let courses = require("../models/course");
 module.exports = function (app) {
 
 
-    //Course ophalen aan courseId.
+  //Course ophalen aan courseId.
   app.get("/course", async (req, res) => {
-    // Get body from request
     let body = req.body;
+    // Verwachte parameters:
+    // _id: String,
 
-    const foundCourse = await courses.findOne({ _id: body._id,  }).populate("exercises");
+    const foundCourse = await courses.findOne({ _id: body._id, }).populate("exercises");
     if (!foundCourse) return res.status(404).send("Course not found");
     return res.status(200).json(foundCourse);
 
@@ -17,10 +18,11 @@ module.exports = function (app) {
 
   //Alle Courses van een teacher ophalen met teacherID.
   app.get("/getallcourses", async (req, res) => {
-    // Get body from request
     let body = req.body;
+    // Verwachte parameters:
+    // teacherId: String,
 
-    const foundCourses = await courses.find({ teacherId: body.teacherId,  }).populate("exercises");
+    const foundCourses = await courses.find({ teacherId: body.teacherId, }).populate("exercises");
     if (!foundCourses) return res.status(404).send("Course not found");
     return res.status(200).json(foundCourses);
 
@@ -28,20 +30,23 @@ module.exports = function (app) {
 
   //Course aanmaken.
   app.post("/course", async (req, res) => {
-    //Get body from request
     let body = req.body;
+    // Verwachte parameters:
+    // title: String,
+    // description: String,
+    // teacherId: String,
 
     //Create course
     let course = new courses({
-        title : body.title,
-        description: body.description,
-        teacherId : body.teacherId,
+      title: body.title,
+      description: body.description,
+      teacherId: body.teacherId,
     });
 
     //Save course to database
     await course.save().then((savedCourse) => {
-        res.status(201).json(savedCourse);
-      })
+      res.status(201).json(savedCourse);
+    })
       .catch((err) => {
         res.status(400).send(err.errors);
       });
@@ -51,6 +56,8 @@ module.exports = function (app) {
   //Course verwijderen.
   app.delete("/course", async (req, res) => {
     let body = req.body;
+    // Verwachte parameters:
+    // _id: String,
 
     courses
       .findOne({ _id: body._id })
@@ -75,6 +82,10 @@ module.exports = function (app) {
   //Course updaten.
   app.put("/course", async (req, res) => {
     let body = req.body;
+    // Verwachte parameters:
+    // _id: String,
+    // title: String,
+    // description: String,
 
     courses
       .findOne({ _id: body._id })
@@ -96,6 +107,9 @@ module.exports = function (app) {
   //Exercise toevoegen aan course.
   app.post("/addexercise", async (req, res) => {
     let body = req.body;
+    // Verwachte parameters:
+    // _id: String,
+    // exerciseId: String,
 
     courses
       .findOne({ _id: body._id })
@@ -116,6 +130,9 @@ module.exports = function (app) {
   //Exercise verwijderen uit course.
   app.post("/removeexercise", async (req, res) => {
     let body = req.body;
+    // Verwachte parameters:
+    // _id: String,
+    // exerciseId: String,
 
     courses
       .findOne({ _id: body._id })

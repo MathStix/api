@@ -4,12 +4,16 @@ module.exports = function (app) {
 
     //Answer aanmaken.
     app.post('/answer', async (req, res) => {
-        // Get body from request.
         let body = req.body;
+        // Verwachte parameters:
+        // exerciseId: String,
+        // teamId: String,
+        // photos: String,
+        // canvas: String,
 
         // Create answer.
         let answer = new answers({
-            texts: body.text,
+            texts: body.texts,
             exerciseId: body.exerciseId,
             teamId: body.teamId,
             photos: body.photos,

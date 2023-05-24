@@ -4,8 +4,9 @@ module.exports = function (app) {
 
     //Exercise ophalen aan exerciseId.
   app.get("/exercise", async (req, res) => {
-    // Get body from request
     let body = req.body;
+    // Verwachte parameters:
+    // _id: String,
 
     exercises.findOne({ _id: body._id })
       .then((foundExercise) => {
@@ -16,8 +17,9 @@ module.exports = function (app) {
 
   //Alle exercises van een teacher ophalen met teacherID.
   app.get("/getallexercises", async (req, res) => {
-    // Get body from request
     let body = req.body;
+    // Verwachte parameters:
+    // teacherId: String,
 
     exercises.find({ teacherId: body.teacherId })
       .then((foundExercises) => {
@@ -28,8 +30,16 @@ module.exports = function (app) {
 
   //Exercise aanmaken.
   app.post("/exercise", async (req, res) => {
-    // Get body from request
     let body = req.body;
+    // Verwachte parameters:
+    // title: String,
+    // description: String,
+    // answer: String,
+    // location: String,
+    // photo: String,
+    // activationRange: String,
+    // exerciseType: String,
+    // teacherId: String,
 
     // Create exercise
     let exercise = new exercises({
@@ -58,6 +68,8 @@ module.exports = function (app) {
   //Exercise verwijderen.
   app.delete("/exercise", async (req, res) => {
     let body = req.body;
+    // Verwachte parameters:
+    // _id: String,
 
     exercises
       .findOne({ _id: body._id })
@@ -82,6 +94,15 @@ module.exports = function (app) {
   //exercise updaten.
   app.put("/exercise", async (req, res) => {
     let body = req.body;
+    // Verwachte parameters:
+    // _id: String,
+    // title: String,
+    // description: String,
+    // answer: String,
+    // location: String,
+    // photo: String,
+    // activationRange: String,
+    // exerciseType: String,
 
     exercises
       .findOne({ _id: body._id })

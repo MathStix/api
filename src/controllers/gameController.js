@@ -2,25 +2,25 @@ const games = require('../models/game');
 
 module.exports = function (app) {
 
-    app.post("/game", async (req, res) => {
-        let body = req.body;
-        // Verwachte parameters:
-        // courseId: String,
-        // word: String,
+  app.post("/game", async (req, res) => {
+    let body = req.body;
+    // Verwachte parameters:
+    // courseId: String,
+    // word: String,
 
-        let game = new games({
-            courseId: body.courseId,
-            word: body.word.toLowerCase()
-        });
-
-        await game.save().then((savedGame) => {
-            res.status(201).json(savedGame);
-        }).catch((err) => {
-            res.status(400).send(err.errors);
-        });
+    let game = new games({
+      courseId: body.courseId,
+      word: body.word.toLowerCase()
     });
 
-    //Game ophalen aan GameId.
+    await game.save().then((savedGame) => {
+      res.status(201).json(savedGame);
+    }).catch((err) => {
+      res.status(400).send(err.errors);
+    });
+  });
+
+  //Game ophalen aan GameId.
   app.get("/game", async (req, res) => {
     // Get body from request
     let body = req.body;
@@ -34,6 +34,9 @@ module.exports = function (app) {
   //Exercise toevoegen aan course.
   app.post("/addplayer", async (req, res) => {
     let body = req.body;
+    // Verwachte parameters:
+    // _id: String,
+    // playerId: String,
 
     games
       .findOne({ _id: body._id })

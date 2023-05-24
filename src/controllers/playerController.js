@@ -4,8 +4,10 @@ module.exports = function (app) {
 
     //Player aanmaken.
     app.post('/player', async (req, res) => {
-        // Get body from request
         let body = req.body;
+        // Verwachte parameters:
+        // deviceId: String,
+        // name: String,
 
         // Create player.
         let player = new players({

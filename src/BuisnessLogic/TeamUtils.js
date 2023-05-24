@@ -20,6 +20,8 @@ function splitArray(playersinGame, playersPerTeam) {
 }
 
 function rearangeArray(playersinGame) {
+    // return playersinGame.sort(() => Math.random() > .5 ? 1 : -1 )
+    
     if (!playersinGame || playersinGame.length == 0) { return }
     else {
         let currentIndex = playersinGame.length, randomIndex;
