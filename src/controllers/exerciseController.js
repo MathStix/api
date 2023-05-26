@@ -14,7 +14,6 @@ module.exports = function (app) {
       });
   });
 
-
   //Alle exercises van een teacher ophalen met teacherID.
   app.get("/getallexercises", async (req, res) => {
     let body = req.body;
@@ -26,7 +25,6 @@ module.exports = function (app) {
         res.status(200).json(foundExercises);
       });
   });
-
 
   //Exercise aanmaken.
   app.post("/exercise", async (req, res) => {
@@ -64,7 +62,6 @@ module.exports = function (app) {
       });
   });
 
-
   //Exercise verwijderen.
   app.delete("/exercise", async (req, res) => {
     let body = req.body;
@@ -89,7 +86,6 @@ module.exports = function (app) {
         res.status(404).send("Exercise not found");
       });
   });
-
 
   //exercise updaten.
   app.put("/exercise", async (req, res) => {

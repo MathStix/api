@@ -27,7 +27,6 @@ module.exports = function (app) {
         });
     });
 
-
     //teams genereren aan de hand van een game met spelers en een course met exercises.
     app.post("/team", async (req, res) => {
         let body = req.body;
@@ -108,7 +107,6 @@ module.exports = function (app) {
         }
     });
 
-
     //Speler naar een ander team verplaatsen.
     app.post("/moveplayer", async (req, res) => {
         let body = req.body;
@@ -141,7 +139,6 @@ module.exports = function (app) {
                 res.status(404).send("Team not found");
             });
     });
-
 
     //woord van de game gokken.
     app.post("/guessword", async (req, res) => {
@@ -198,5 +195,4 @@ module.exports = function (app) {
             res.status(404).json("Wait out timepenalty");
         }
     });
-
 }

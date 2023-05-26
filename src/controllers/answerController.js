@@ -8,10 +8,8 @@ const exercises = require("../models/exercise");
 
 module.exports = function (app) {
 
-    
-
     //get all answers from one team.
-    app.get('/getall', async (req, res) => {
+    app.get('/getallanswers', async (req, res) => {
         let body = req.body;
         // Verwachte parameters:
         // teamId: String,
@@ -31,7 +29,6 @@ module.exports = function (app) {
         if (!foundAnswer) return res.status(404).send("Answer not found");
         return res.status(200).json(foundAnswer);
     });
-
 
     //Answer aanmaken.
     app.post('/answer', async (req, res) => {
@@ -74,7 +71,7 @@ module.exports = function (app) {
             if (!foundTeam || !foundGame) return res.status(404).send("Team or game not found");
             res.status(200).send(guessedLetters);
         } else {
-            res.status(400).send(guessedLetters);
+            res.status(400).send("wrong guess");
         }
 
         //Save answer to database.

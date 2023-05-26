@@ -2,7 +2,6 @@ let courses = require("../models/course");
 
 module.exports = function (app) {
 
-
   //Course ophalen aan courseId.
   app.get("/course", async (req, res) => {
     let body = req.body;
@@ -14,7 +13,6 @@ module.exports = function (app) {
     return res.status(200).json(foundCourse);
 
   });
-
 
   //Alle Courses van een teacher ophalen met teacherID.
   app.get("/getallcourses", async (req, res) => {
@@ -52,7 +50,6 @@ module.exports = function (app) {
       });
   });
 
-
   //Course verwijderen.
   app.delete("/course", async (req, res) => {
     let body = req.body;
@@ -77,7 +74,6 @@ module.exports = function (app) {
         res.status(404).send("Course not found");
       });
   });
-
 
   //Course updaten.
   app.put("/course", async (req, res) => {

@@ -56,7 +56,7 @@ module.exports = function (app) {
                     console.log(err);
                     return res.status(400).send("Password incorrect");
                 };
-                res.status(200).send(isMatch ? "Password correct" : "Password incorrect");
+                res.status(200).send(foundTeacher);
             });
         }).catch((err) => {
             res.status(404).send("Email not found");

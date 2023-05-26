@@ -106,5 +106,4 @@ module.exports = function (app) {
         res.status(404).send("Game not found");
       });
   });
-
 }

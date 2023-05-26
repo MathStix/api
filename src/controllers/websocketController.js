@@ -21,9 +21,20 @@ module.exports = function (app) {
         var obj = JSON.parse(data);
         eventEmitter.emit(obj.eventName, data);
     }
-    
+
+    app.getUniqueID = () => {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+        }
+        return s4() + s4() + '-' + s4();
+    };
+
     app.ws("/websocket", (ws) => {
         // Load all packets
+
+        ws.on('open', function open() {
+            ws.send('something');
+        });
 
         eventEmitter.on('startGame', (data) => {
             ws.send(data);
