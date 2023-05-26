@@ -2,8 +2,11 @@ const mongoose = require("mongoose");
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+var cors = require('cors');
 const websocket = require("express-ws")(app);
 
+
+app.use(cors())
 
 require("dotenv").config();
 
