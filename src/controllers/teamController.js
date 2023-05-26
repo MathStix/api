@@ -11,6 +11,23 @@ const courses = require("../models/course");
 
 module.exports = function (app) {
 
+    //team ophalen die in de game zitten.
+    app.get("/team", async (req, res) => {
+        let body = req.body;
+        // Verwachte parameters:
+        // _id: String,
+
+        //huidige Game ophalen.
+        await teams.findOne({ _id: body._id }).populate("playerIds")
+            .then(async (foundTeam) => {
+                res.status(200).send(foundTeam);
+        }).catch((err) => {
+            console.log(err);
+            res.status(404).send("Team not found");
+        });
+    });
+
+
     //teams genereren aan de hand van een game met spelers en een course met exercises.
     app.post("/team", async (req, res) => {
         let body = req.body;

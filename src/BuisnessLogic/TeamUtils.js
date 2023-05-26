@@ -21,7 +21,7 @@ function splitArray(playersinGame, playersPerTeam) {
 
 function rearangeArray(playersinGame) {
     // return playersinGame.sort(() => Math.random() > .5 ? 1 : -1 )
-    
+
     if (!playersinGame || playersinGame.length == 0) { return }
     else {
         let currentIndex = playersinGame.length, randomIndex;
@@ -54,18 +54,4 @@ function setUnlockedExerciseIdsOnTeamCreation(totalExerciseIds) {
     }
 }
 
-function GuessWord(word, guessword) {
-    const letterAndPosition = [];
-
-    for (let i = 0; i < word.length; i++) {
-        const letter = word[i];
-
-        if (guessword.includes(letter)) {
-            letterAndPosition.push({ position: i, letter: letter });
-        }
-    }
-
-    return letterAndPosition;
-}
-
-module.exports = { splitArray, rearangeArray, setUnlockedExerciseIdsOnTeamCreation, GuessWord }
+module.exports = { splitArray, rearangeArray, setUnlockedExerciseIdsOnTeamCreation }
