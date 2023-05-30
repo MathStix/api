@@ -9,9 +9,19 @@ module.exports = function (app) {
     // _id: String,
 
     //huidige Game ophalen.
-    await games.findOne({ _id: body._id }).populate("teamIds").populate("playerIds")
+    await games.findOne({ _id: body._id }).populate({ path: "teamIds", populate: { path: "playerIds" } })
       .then(async (foundGame) => {
         res.status(200).send(foundGame);
+
+        //websocket aanroepen om naar alle gebruikers te sturen dat de game gaat beginnen.
+        var obj = {
+          type: 'event',
+          eventName: 'startGame',
+          clients: foundGame.playerIds,
+          message: 'startGame'
+        };
+        app.eventEmit(JSON.stringify(obj));
+
       }).catch((err) => {
         console.log(err);
         res.status(404).send("Game not found");
@@ -54,16 +64,25 @@ module.exports = function (app) {
     // Verwachte parameters:
     // _id: String,
     // playerId: String,
+    // gameCode: String
 
     await games
       .findOne({ _id: body._id })
       .then(async (foundGame) => {
 
-        foundGame.playerIds.push(body.playerId)
+        if (foundGame.code === body.gameCode) {
+          foundGame.playerIds.push(body.playerId)
 
-        await foundGame.save();
+          // als speler er niet inzit zet em erin.
+          if (!foundGame.playerIds.includes(body.playerId)) {
+            await foundGame.save();
+          }
 
-        res.status(201).json("Player joined");
+          res.status(201).json("Player joined");
+        }
+        else {
+          res.status(400).json("Incorrect code");
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -78,7 +97,7 @@ module.exports = function (app) {
     // _id: String,
 
     await games
-      .findOne({ _id: body._id })
+      .findOne({ _id: body._id }).populate({ path: "teamIds", populate: { path: "playerIds" } })
       .then(async (foundGame) => {
 
         if (!foundGame.isStarted) {
@@ -91,6 +110,7 @@ module.exports = function (app) {
           var obj = {
             type: 'event',
             eventName: 'startGame',
+            clients: foundGame.playerIds,
             message: 'startGame'
           };
           app.eventEmit(JSON.stringify(obj));

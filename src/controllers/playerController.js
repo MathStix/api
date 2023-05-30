@@ -15,13 +15,18 @@ module.exports = function (app) {
             name: body.name,
         });
 
-        // Save player to database.
-        player.save().then((savedPlayer) => {
-            res.status(201).json(savedPlayer);
-        })
-            .catch((err) => {
-                console.log(err.errors);
-                res.status(400).send(err.errors);
+        await players.findOne({ deviceId: body.deviceId })
+            .then(async (foundPlayer) => {
+                
             });
-    });
-}
+
+                // Save player to database.
+                player.save().then((savedPlayer) => {
+                    res.status(201).json(savedPlayer);
+                })
+                    .catch((err) => {
+                        console.log(err.errors);
+                        res.status(400).send(err.errors);
+                    });
+            });
+    }

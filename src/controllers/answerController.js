@@ -69,6 +69,16 @@ module.exports = function (app) {
             guessedLetters = getLettersAndPosition(foundGame.word, foundTeam.guessedLetters);
 
             if (!foundTeam || !foundGame) return res.status(404).send("Team or game not found");
+
+            //websocket aanroepen om naar alle gebruikers te sturen dat er een antword goed was.
+            var obj = {
+                type: 'event',
+                eventName: 'correctAnswer',
+                clients: foundTeam.playerIds,
+                message: guessedLetters
+            };
+            app.eventEmit(JSON.stringify(obj));
+
             res.status(200).send(guessedLetters);
         } else {
             res.status(400).send("wrong guess");
