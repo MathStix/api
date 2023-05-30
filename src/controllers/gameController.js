@@ -58,16 +58,15 @@ module.exports = function (app) {
       });
   });
 
-  //Exercise toevoegen aan course.
+  //Player een team laten joinen.
   app.post("/addplayer", async (req, res) => {
     let body = req.body;
     // Verwachte parameters:
-    // _id: String,
     // playerId: String,
     // gameCode: String
 
     await games
-      .findOne({ _id: body._id })
+      .findOne({ code: body.gameCode })
       .then(async (foundGame) => {
 
         if (foundGame.code === body.gameCode) {

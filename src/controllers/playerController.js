@@ -17,16 +17,27 @@ module.exports = function (app) {
 
         await players.findOne({ deviceId: body.deviceId })
             .then(async (foundPlayer) => {
-                
+                if (!foundPlayer.deviceId.includes(body.deviceId)) {
+                    // Save player to database.
+                    player.save().then((savedPlayer) => {
+                        res.status(201).json(savedPlayer);
+                    })
+                        .catch((err) => {
+                            console.log(err.errors);
+                            res.status(400).send(err.errors);
+                        });
+                }
+                else {
+                    foundPlayer.name = body.name;
+                    await players.updateOne(foundPlayer);
+                    await foundPlayer.save().then((savedPlayer) => {
+                        res.status(201).json(savedPlayer);
+                    })
+                        .catch((err) => {
+                            console.log(err.errors);
+                            res.status(400).send(err.errors);
+                        });
+                }
             });
-
-                // Save player to database.
-                player.save().then((savedPlayer) => {
-                    res.status(201).json(savedPlayer);
-                })
-                    .catch((err) => {
-                        console.log(err.errors);
-                        res.status(400).send(err.errors);
-                    });
-            });
-    }
+    });
+}
