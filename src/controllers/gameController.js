@@ -14,6 +14,25 @@ module.exports = function (app) {
       .then(async (foundGame) => {
         res.status(200).send(foundGame);
 
+        //alle deviceIds ophalen.
+        let deviceIds = [];
+        foundGame.playerIds.forEach(team => {
+          team.playerIds.forEach(player => {
+            if (player.deviceId) {
+              deviceIds.push(player.deviceId);
+            }
+          });
+        });
+
+        //websocket aanroepen om naar alle gebruikers te sturen dat de game gaat beginnen.
+        var obj = {
+          type: 'event',
+          eventName: 'startGame',
+          clients: deviceIds,
+          message: 'startGame'
+        };
+        app.eventEmit(JSON.stringify(obj));
+
       }).catch((err) => {
         console.log(err);
         res.status(404).send("Game not found");
@@ -107,24 +126,17 @@ module.exports = function (app) {
 
           await foundGame.save();
 
-          //alle deviceIds ophalen.
-          let deviceIds = [];
-          foundGame.teamIds.forEach(team => {
-            team.playerIds.forEach(player => {
-              if (player.deviceId) {
-                deviceIds.push(player.deviceId);
-              }
-            });
-          });
+
+          //nog alle deviceIds ophalen die in de game zitten.
 
           //websocket aanroepen om naar alle gebruikers te sturen dat de game gaat beginnen.
-          var obj = {
-            type: 'event',
-            eventName: 'startGame',
-            clients: deviceIds,
-            message: 'startGame'
-          };
-          app.eventEmit(JSON.stringify(obj));
+          // var obj = {
+          //   type: 'event',
+          //   eventName: 'startGame',
+          //   clients: deviceIds,
+          //   message: 'startGame'
+          // };
+          // app.eventEmit(JSON.stringify(obj));
 
           res.status(201).json("Game started");
         }
