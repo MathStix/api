@@ -56,6 +56,7 @@ module.exports = function (app) {
             if (bodyJson.type === 'setClientId') {
                 // Store the client in the map
                 clients.set(bodyJson.deviceId, ws);
+                ws.send(`deviceId: ${bodyJson.deviceId}`);
             }
             if (bodyJson.type === 'sendlocation') {
                 clients.forEach(function each(client) {
