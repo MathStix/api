@@ -1,4 +1,5 @@
 const games = require('../models/game');
+const players = require('../models/player');
 
 module.exports = function (app) {
 
@@ -62,7 +63,7 @@ module.exports = function (app) {
   app.post("/addplayer", async (req, res) => {
     let body = req.body;
     // Verwachte parameters:
-    // playerId: String,
+    // deviceId: String,
     // gameCode: String
 
     await games
@@ -70,14 +71,24 @@ module.exports = function (app) {
       .then(async (foundGame) => {
 
         if (foundGame.code === body.gameCode) {
-          foundGame.playerIds.push(body.playerId)
 
-          // als speler er niet inzit zet em erin.
-          if (!foundGame.playerIds.includes(body.playerId)) {
-            await foundGame.save();
-          }
+          await players.findOne({ deviceId: body.deviceId })
+            .then(async (foundPlayer) => {
+              if (foundPlayer !== null) {
+                // als speler er niet inzit zet em erin.
+                if (!foundGame.playerIds.includes(foundPlayer.playerId)) {
+                  foundGame.playerIds.push(foundPlayer.playerId);
 
-          res.status(201).json("Player joined");
+                  await foundGame.save();
+                }
+
+                res.status(201).json({_id: foundGame._id});
+              }
+              else {
+                res.status(404).send("Player not found");
+              }
+
+            })
         }
         else {
           res.status(400).json("Incorrect code");

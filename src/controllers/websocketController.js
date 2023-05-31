@@ -25,6 +25,7 @@ module.exports = function (app) {
     function sendDataToClients(data) {
         let bodyJson = JSON.parse(data);
 
+        console.log(data);
         bodyJson.clients.forEach(function (element) {
             const client = clients.get(element);
 
@@ -47,6 +48,7 @@ module.exports = function (app) {
 
         //event om een antwoord naar elke client te sturen in een team.
         eventEmitter.on('correctAnswer', (data) => {
+            console.log('test');
             sendDataToClients(data);
         });
 
@@ -56,6 +58,11 @@ module.exports = function (app) {
             if (bodyJson.type === 'setClientId') {
                 // Store the client in the map
                 clients.set(bodyJson.deviceId, ws);
+            }
+            if (bodyJson.type === 'sendlocation') {
+                clients.forEach(function each(client) {
+                    client.send(bodyJson.message);
+                });
             }
         });
 
@@ -73,6 +80,4 @@ module.exports = function (app) {
         //     console.log(bodyJson);
         // });
     });
-
-
 };

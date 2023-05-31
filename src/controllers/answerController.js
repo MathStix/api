@@ -70,7 +70,7 @@ module.exports = function (app) {
 
             if (!foundTeam || !foundGame) return res.status(404).send("Team or game not found");
 
-            //websocket aanroepen om naar alle gebruikers te sturen dat er een antword goed was.
+            //websocket aanroepen om naar alle gebruikers te sturen dat er een antwoord goed was.
             var obj = {
                 type: 'event',
                 eventName: 'correctAnswer',
