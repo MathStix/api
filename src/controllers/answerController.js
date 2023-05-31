@@ -70,11 +70,21 @@ module.exports = function (app) {
 
             if (!foundTeam || !foundGame) return res.status(404).send("Team or game not found");
 
+            //alle deviceIds ophalen.
+            let deviceIds = [];
+            foundGame.teamIds.forEach(team => {
+                team.playerIds.forEach(player => {
+                    if (player.deviceId) {
+                        deviceIds.push(player.deviceId);
+                    }
+                });
+            });
+
             //websocket aanroepen om naar alle gebruikers te sturen dat er een antwoord goed was.
             var obj = {
                 type: 'event',
                 eventName: 'correctAnswer',
-                clients: foundTeam.playerIds,
+                clients: deviceIds,
                 message: guessedLetters
             };
             app.eventEmit(JSON.stringify(obj));

@@ -38,6 +38,10 @@ module.exports = function (app) {
                             res.status(400).send(err.errors);
                         });
                 }
+            })
+            .catch((err) => {
+                console.log(err.errors);
+                res.status(404).send('not found');
             });
     });
 }
