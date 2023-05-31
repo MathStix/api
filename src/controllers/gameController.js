@@ -67,8 +67,8 @@ module.exports = function (app) {
             .then(async (foundPlayer) => {
               if (foundPlayer !== null) {
                 // als speler er niet inzit zet em erin.
-                if (!foundGame.playerIds.includes(foundPlayer.playerId)) {
-                  foundGame.playerIds.push(foundPlayer.playerId);
+                if (!foundGame.playerIds.includes(foundPlayer._id)) {
+                  foundGame.playerIds.push(foundPlayer._id);
 
                   await foundGame.save();
                 }
