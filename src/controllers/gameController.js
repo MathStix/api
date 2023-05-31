@@ -16,7 +16,7 @@ module.exports = function (app) {
 
         //alle deviceIds ophalen.
         let deviceIds = [];
-        foundGame.playerIds.forEach(team => {
+        foundGame.teamIds.forEach(team => {
           team.playerIds.forEach(player => {
             if (player.deviceId) {
               deviceIds.push(player.deviceId);
