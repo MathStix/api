@@ -3,24 +3,24 @@ let exercises = require("../models/exercise");
 module.exports = function (app) {
 
     //Exercise ophalen aan exerciseId.
-  app.get("/exercise", async (req, res) => {
-    let body = req.body;
+  app.get("/exercise/:id", async (req, res) => {
+    let id = req.params.id;
     // Verwachte parameters:
     // _id: String,
 
-    exercises.findOne({ _id: body._id })
+    exercises.findById(id)
       .then((foundExercise) => {
         res.status(200).json(foundExercise);
       });
   });
 
   //Alle exercises van een teacher ophalen met teacherID.
-  app.get("/getallexercises", async (req, res) => {
-    let body = req.body;
+  app.get("/getallexercises/:id", async (req, res) => {
+    let id = req.params.id;
     // Verwachte parameters:
     // teacherId: String,
 
-    exercises.find({ teacherId: body.teacherId })
+    exercises.find({ teacherId: id })
       .then((foundExercises) => {
         res.status(200).json(foundExercises);
       });

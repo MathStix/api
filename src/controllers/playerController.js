@@ -16,6 +16,11 @@ module.exports = function (app) {
 
     await players
       .findOneAndUpdate({ deviceId: body.deviceId }, { name: body.name })
+      .then(async (foundPlayer) => {
+        foundPlayer.name = body.name;
+        await foundPlayer.save();
+        res.status(201).json(foundPlayer);
+      })     
       .catch((err) => {
         player
           .save()

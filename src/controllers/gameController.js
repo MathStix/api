@@ -19,7 +19,7 @@ module.exports = function (app) {
         foundGame.teamIds.forEach(team => {
           team.playerIds.forEach(player => {
             if (player.deviceId) {
-              deviceIds.push(player.deviceId);
+              deviceIds.push({ teamId: team._id, deviceId: player.deviceId });
             }
           });
         });
@@ -127,16 +127,24 @@ module.exports = function (app) {
           await foundGame.save();
 
 
-          //nog alle deviceIds ophalen die in de game zitten.
+          //alle deviceIds ophalen.
+          let deviceIds = [];
+          foundGame.teamIds.forEach(team => {
+            team.playerIds.forEach(player => {
+              if (player.deviceId) {
+                deviceIds.push({ teamId: team._id, deviceId: player.deviceId });
+              }
+            });
+          });
 
           //websocket aanroepen om naar alle gebruikers te sturen dat de game gaat beginnen.
-          // var obj = {
-          //   type: 'event',
-          //   eventName: 'startGame',
-          //   clients: deviceIds,
-          //   message: 'startGame'
-          // };
-          // app.eventEmit(JSON.stringify(obj));
+          var obj = {
+            type: 'event',
+            eventName: 'startGame',
+            clients: deviceIds,
+            message: 'startGame'
+          };
+          app.eventEmit(JSON.stringify(obj));
 
           res.status(201).json("Game started");
         }

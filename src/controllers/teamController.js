@@ -1,5 +1,5 @@
 //Imprt methods van TeamUtils.
-const { splitArray, rearangeArray, setUnlockedExerciseIdsOnTeamCreation, GuessWord } = require('../BuisnessLogic/TeamUtils');
+const { splitArray, rearangeArray, setUnlockedExerciseIdsOnTeamCreation } = require('../BuisnessLogic/TeamUtils');
 
 //random name generator.
 const { uniqueNamesGenerator, adjectives, colors, animals } = require('unique-names-generator');
@@ -12,19 +12,19 @@ const courses = require("../models/course");
 module.exports = function (app) {
 
     //team ophalen die in de game zitten.
-    app.get("/team", async (req, res) => {
-        let body = req.body;
+    app.get("/team/:id", async (req, res) => {
+        let id = req.params.id;
         // Verwachte parameters:
         // _id: String,
 
         //huidige Game ophalen.
-        await teams.findOne({ _id: body._id }).populate("playerIds")
+        await teams.findById(id).populate("unlockedExerciseIds")
             .then(async (foundTeam) => {
-                res.status(200).send(foundTeam);
-        }).catch((err) => {
-            console.log(err);
-            res.status(404).send("Team not found");
-        });
+                res.status(200).json(foundTeam);
+            }).catch((err) => {
+                console.log(err);
+                res.status(404).send("Team not found");
+            });
     });
 
     //teams genereren aan de hand van een game met spelers en een course met exercises.
@@ -46,7 +46,7 @@ module.exports = function (app) {
                     //huidige teams verwijderen uit teams column.
                     foundGame.teamIds.forEach(async (team) => {
                         await teams.findByIdAndDelete(team._id)
-                    });
+                    })
 
                     //teams uit game verwijderen.
                     foundGame.teamIds = [];
@@ -57,7 +57,13 @@ module.exports = function (app) {
                 await courses.findOne({ _id: currentGame.courseId })
                     .then((foundCourse) => {
                         currentCourse = foundCourse;
+                    })
+                    .catch((err) => {
+                        res.status(400).send(err.errors);
                     });
+            })
+            .catch((err) => {
+                res.status(404).send('no game found');
             });
 
         //players in Game.
@@ -95,8 +101,9 @@ module.exports = function (app) {
 
             //teams toevoegen aan Game.
             if (!currentGame.teamIds || currentGame.teamIds.length > 0) {
-                await currentGame.save().then(() => {
-                    res.status(201).json("teams saved");
+                await currentGame.save().then(async () => {
+
+                    res.status(201).json(currentGame);
                 }).catch((err) => {
                     res.status(400).send(err.errors);
                 });

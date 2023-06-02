@@ -41,7 +41,7 @@ function setUnlockedExerciseIdsOnTeamCreation(totalExerciseIds) {
     else {
         const totalExerciseIdsLength = totalExerciseIds.length;
 
-        const percentage = 20;
+        const percentage = 80;
         let percentItems = Math.round((percentage / 100) * totalExerciseIdsLength);
 
         if (percentItems === 0) {

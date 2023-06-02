@@ -26,10 +26,10 @@ module.exports = function (app) {
         let bodyJson = JSON.parse(data);
 
         bodyJson.clients.forEach(function (element) {
-            const client = clients.get(element);
+            const client = clients.get(element.deviceId);
 
             if (client) {
-                client.send(bodyJson.message);
+                client.send(JSON.stringify({ teamId: element.teamId, message: bodyJson.message }));
             }
         });
     }
@@ -56,11 +56,11 @@ module.exports = function (app) {
             if (bodyJson.type === 'setClientId') {
                 // Store the client in the map
                 clients.set(bodyJson.deviceId, ws);
-                ws.send(`deviceId: ${bodyJson.deviceId}`);
+                ws.send(JSON.stringify({ deviceId: bodyJson.deviceId }));
             }
             if (bodyJson.type === 'sendlocation') {
                 clients.forEach(function each(client) {
-                    client.send(bodyJson.message);
+                    client.send(JSON.stringify({ message: bodyJson.message }));
                 });
             }
         });

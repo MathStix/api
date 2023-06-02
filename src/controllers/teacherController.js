@@ -5,7 +5,7 @@ module.exports = function (app) {
     app.get("/teacher/:id", async (req, res) => {
         let id = req.params.id;
         // Verwachte parameters:
-        // _id: String,
+        // id: String,
 
         teachers.findById(id).then((foundTeacher) => {
             res.status(200).json(foundTeacher);
