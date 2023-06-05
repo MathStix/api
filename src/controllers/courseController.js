@@ -3,24 +3,24 @@ let courses = require("../models/course");
 module.exports = function (app) {
 
   //Course ophalen aan courseId.
-  app.get("/course", async (req, res) => {
-    let body = req.body;
+  app.get("/course/:id", async (req, res) => {
+    let id = req.params.id;
     // Verwachte parameters:
     // _id: String,
 
-    const foundCourse = await courses.findOne({ _id: body._id, }).populate("exercises");
+    const foundCourse = await courses.findById(id).populate("exercises");
     if (!foundCourse) return res.status(404).send("Course not found");
     return res.status(200).json(foundCourse);
 
   });
 
   //Alle Courses van een teacher ophalen met teacherID.
-  app.get("/getallcourses", async (req, res) => {
-    let body = req.body;
+  app.get("/getallcourses/:id", async (req, res) => {
+    let id = req.params.id;
     // Verwachte parameters:
     // teacherId: String,
 
-    const foundCourses = await courses.find({ teacherId: body.teacherId, }).populate("exercises");
+    const foundCourses = await courses.find({ teacherId: id, }).populate("exercises");
     if (!foundCourses) return res.status(404).send("Course not found");
     return res.status(200).json(foundCourses);
 
