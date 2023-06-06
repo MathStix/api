@@ -55,9 +55,11 @@ module.exports = function (app) {
 
             if (bodyJson.type === 'setClientId') {
                 // Store the client in the map
-                if (!clients.has(bodyJson.deviceId)) {
-                    clients.set(bodyJson.deviceId, ws);
+                if (clients.has(bodyJson.deviceId)) {
+                    clients.delete(bodyJson.deviceId);
                 }
+
+                clients.set(bodyJson.deviceId, ws);
                 ws.send(JSON.stringify({ deviceId: bodyJson.deviceId }));
             }
             if (bodyJson.type === 'sendlocation') {
