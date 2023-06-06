@@ -4,34 +4,15 @@ const players = require('../models/player');
 module.exports = function (app) {
 
   //teams ophalen die in de game zitten.
-  app.get("/getteams", async (req, res) => {
-    let body = req.body;
+  app.get("/getteams/:id", async (req, res) => {
+    let id = req.params.id;
     // Verwachte parameters:
     // _id: String,
 
     //huidige Game ophalen.
-    await games.findOne({ _id: body._id }).populate({ path: "teamIds", populate: { path: "playerIds" } })
+    await games.findById(id).populate({ path: "teamIds", populate: { path: "playerIds" } })
       .then(async (foundGame) => {
         res.status(200).send(foundGame);
-
-        //alle deviceIds ophalen.
-        let deviceIds = [];
-        foundGame.teamIds.forEach(team => {
-          team.playerIds.forEach(player => {
-            if (player.deviceId) {
-              deviceIds.push({ teamId: team._id, deviceId: player.deviceId });
-            }
-          });
-        });
-
-        //websocket aanroepen om naar alle gebruikers te sturen dat de game gaat beginnen.
-        var obj = {
-          type: 'event',
-          eventName: 'startGame',
-          clients: deviceIds,
-          message: 'startGame'
-        };
-        app.eventEmit(JSON.stringify(obj));
 
       }).catch((err) => {
         console.log(err);
@@ -59,13 +40,16 @@ module.exports = function (app) {
   });
 
   //Game ophalen aan GameId.
-  app.get("/game", async (req, res) => {
+  app.get("/game/:id", async (req, res) => {
     // Get body from request
-    let body = req.body;
+    let id = req.params.id;
 
-    await games.findOne({ _id: body._id })
+    await games.findById(id)
       .then((foundGame) => {
         res.status(200).json(foundGame);
+      }).catch((err) => {
+        console.log(err);
+        res.status(404).send("Game not found");
       });
   });
 
@@ -146,7 +130,7 @@ module.exports = function (app) {
           };
           app.eventEmit(JSON.stringify(obj));
 
-          res.status(201).json("Game started");
+          res.status(201).json(foundGame);
         }
         else {
           res.status(400).send("Game already started");

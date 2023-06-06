@@ -56,6 +56,7 @@ module.exports = function (app) {
                 //huidige Course ophalen.
                 await courses.findOne({ _id: currentGame.courseId })
                     .then((foundCourse) => {
+                        
                         currentCourse = foundCourse;
                     })
                     .catch((err) => {
@@ -137,6 +138,9 @@ module.exports = function (app) {
                         foundTeam.playerIds.splice(foundTeam.playerIds.indexOf(body.playerId), 1);
 
                         await foundTeam.save();
+                    }).catch((err) => {
+                        console.log(err);
+                        res.status(404).send("Team not found");
                     });
 
                 res.status(200).json("Player moved");
@@ -174,8 +178,14 @@ module.exports = function (app) {
                     .then((foundTeam) => {
 
                         currentTeam = foundTeam;
-                    })
-            })
+                    }).catch((err) => {
+                        console.log(err);
+                        res.status(404).send("Team not found");
+                    });
+            }).catch((err) => {
+                console.log(err);
+                res.status(404).send("Game not found");
+            });
 
         //check of het team alweer mag raden ivm de timepenalty.
         if (new Date(now.getTime()) > new Date(currentTeam.guessCooldown) || currentTeam.guessCooldown === undefined) {

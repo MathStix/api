@@ -44,10 +44,9 @@ module.exports = function (app) {
     //Save course to database
     await course.save().then((savedCourse) => {
       res.status(201).json(savedCourse);
-    })
-      .catch((err) => {
-        res.status(400).send(err.errors);
-      });
+    }).catch((err) => {
+      res.status(400).send(err.errors);
+    });
   });
 
   //Course verwijderen.
@@ -64,12 +63,10 @@ module.exports = function (app) {
           .findByIdAndDelete(foundCourse._id)
           .then((deletedCourse) => {
             return res.status(200).send("Course removed");
-          })
-          .catch((err) => {
+          }).catch((err) => {
             return res.status(400).send(err);
           });
-      })
-      .catch((err) => {
+      }).catch((err) => {
         console.log(err);
         res.status(404).send("Course not found");
       });
@@ -93,8 +90,7 @@ module.exports = function (app) {
         await foundCourse.save();
 
         res.status(201).json("Course updated");
-      })
-      .catch((err) => {
+      }).catch((err) => {
         console.log(err);
         res.status(404).send("Course not found");
       });
@@ -116,8 +112,7 @@ module.exports = function (app) {
         await foundCourse.save();
 
         res.status(201).json("Exercise added");
-      })
-      .catch((err) => {
+      }).catch((err) => {
         console.log(err);
         res.status(404).send("Course not found");
       });
@@ -138,8 +133,7 @@ module.exports = function (app) {
         await foundCourse.save();
 
         res.status(201).json("Exercise removed");
-      })
-      .catch((err) => {
+      }).catch((err) => {
         console.log(err);
         res.status(404).send("Course not found");
       });

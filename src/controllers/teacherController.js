@@ -33,14 +33,13 @@ module.exports = function (app) {
         // Save teacher to database
         teacher.save().then((savedTeacher) => {
             res.status(201).json(savedTeacher);
-        })
-            .catch((err) => {
-                if (err.code === 11000) {
-                    return res.status(400).send("Email already exists");
-                }
-                console.log(err.errors);
-                res.status(400).send(err.errors);
-            });
+        }).catch((err) => {
+            if (err.code === 11000) {
+                return res.status(400).send("Email already exists");
+            }
+            console.log(err.errors);
+            res.status(400).send(err.errors);
+        });
     });
 
     //Inloggen

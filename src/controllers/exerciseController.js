@@ -11,6 +11,9 @@ module.exports = function (app) {
     exercises.findById(id)
       .then((foundExercise) => {
         res.status(200).json(foundExercise);
+      }).catch((err) => {
+        console.log(err);
+        res.status(404).send("Exercise not found");
       });
   });
 
@@ -23,6 +26,9 @@ module.exports = function (app) {
     exercises.find({ teacherId: id })
       .then((foundExercises) => {
         res.status(200).json(foundExercises);
+      }).catch((err) => {
+        console.log(err);
+        res.status(404).send("Exercises not found");
       });
   });
 
@@ -56,8 +62,7 @@ module.exports = function (app) {
       .save()
       .then((savedExercise) => {
         res.status(201).json(savedExercise);
-      })
-      .catch((err) => {
+      }).catch((err) => {
         res.status(400).send(err.errors);
       });
   });
