@@ -9,23 +9,23 @@ const exercises = require("../models/exercise");
 module.exports = function (app) {
 
     //get all answers from one team.
-    app.get('/getallanswers', async (req, res) => {
-        let body = req.body;
+    app.get('/getallanswers/:id', async (req, res) => {
+        let id = req.params.id;
         // Verwachte parameters:
         // teamId: String,
 
-        const foundAnswers = await answers.find({ teamId: body.teamId, });
+        const foundAnswers = await answers.find({ teamId: id, });
         if (!foundAnswers) return res.status(404).send("Team not found");
         return res.status(200).json(foundAnswers);
     });
 
-    //get all answers from one team.
-    app.get('/answer', async (req, res) => {
-        let body = req.body;
+    //get one answer.
+    app.get('/answer/:id', async (req, res) => {
+        let id = req.params.id;
         // Verwachte parameters:
         // _id: String,
 
-        const foundAnswer = await answers.find({ _id: body._id, });
+        const foundAnswer = await answers.find({ _id: id, });
         if (!foundAnswer) return res.status(404).send("Answer not found");
         return res.status(200).json(foundAnswer);
     });
@@ -39,7 +39,7 @@ module.exports = function (app) {
         // exerciseId: String,
         // teamId: String,
         // photos: String,
-        // canvas: String,
+        // canvas: String
 
         // Create answer.
         let answer = new answers({

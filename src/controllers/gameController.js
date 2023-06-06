@@ -94,14 +94,14 @@ module.exports = function (app) {
       });
   });
 
-  //Exercise toevoegen aan course.
-  app.post("/start", async (req, res) => {
-    let body = req.body;
+  //Game starten.
+  app.post("/start/:id", async (req, res) => {
+    let id = req.params.id;
     // Verwachte parameters:
     // _id: String,
 
     await games
-      .findOne({ _id: body._id }).populate({ path: "teamIds", populate: { path: "playerIds" } })
+      .findOne({ _id: id }).populate({ path: "teamIds", populate: { path: "playerIds" } })
       .then(async (foundGame) => {
 
         if (!foundGame.isStarted) {
@@ -109,7 +109,6 @@ module.exports = function (app) {
             foundGame.startTime = new Date().toString();
 
           await foundGame.save();
-
 
           //alle deviceIds ophalen.
           let deviceIds = [];
