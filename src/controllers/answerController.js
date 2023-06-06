@@ -54,8 +54,8 @@ module.exports = function (app) {
         const foundExercise = await exercises.findOne({ _id: body.exerciseId, });
         if (!foundExercise) return res.status(404).send("exercise not found");
 
-        if (body.texts === foundExercise.answer) {
-            const foundGame = await games.findOne({ _id: body.gameId, });
+        if (body.texts[0] === foundExercise.answer) {
+            const foundGame = await games.findOne({ _id: body.gameId, }).populate('teamIds');
             const foundTeam = await teams.findOne({ _id: body.teamId, });
 
             let letterPosition = returnLetter(foundTeam.guessedLetters, foundGame.word.length);
