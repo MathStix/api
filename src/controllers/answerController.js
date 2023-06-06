@@ -5,6 +5,7 @@ let answers = require('../models/answer');
 const teams = require('../models/team');
 const games = require('../models/game');
 const exercises = require("../models/exercise");
+const { json } = require('body-parser');
 
 module.exports = function (app) {
 
@@ -38,7 +39,9 @@ module.exports = function (app) {
         // teamId: Sting,
         // exerciseId: String,
         // teamId: String,
+        // texts: String,
         // photos: String,
+        
         // canvas: String
 
         // Create answer.
@@ -50,46 +53,51 @@ module.exports = function (app) {
             canvas: body.canvas,
         });
 
+        const asJson = JSON.parse(body.texts);
+        
         let guessedLetters = [];
         const foundExercise = await exercises.findOne({ _id: body.exerciseId, });
         if (!foundExercise) return res.status(404).send("exercise not found");
 
-        if (body.texts.toString() === foundExercise.answer) {
+        if (asJson[0].toString() === foundExercise.answer) {
             const foundGame = await games.findOne({ _id: body.gameId, }).populate('teamIds');
             const foundTeam = await teams.findOne({ _id: body.teamId, });
 
+            if (!foundTeam || !foundGame) return res.status(404).send("Team or game not found");
+
             let letterPosition = returnLetter(foundTeam.guessedLetters, foundGame.word.length);
-            foundTeam.guessedLetters.push(letterPosition);
+            if(letterPosition !== null){
+                foundTeam.guessedLetters.push(letterPosition);
+            }
 
             //letter opslaan in team.
             foundTeam.save().catch((err) => {
+                console.log('error');
                 return res.status(400).send(err.errors);
             });
 
             guessedLetters = getLettersAndPosition(foundGame.word, foundTeam.guessedLetters);
 
-            if (!foundTeam || !foundGame) return res.status(404).send("Team or game not found");
+            // //alle deviceIds ophalen.
+            // let deviceIds = [];
+            // foundGame.teamIds.forEach(team => {
+            //     team.playerIds.forEach(player => {
+            //         if (player.deviceId) {
+            //             deviceIds.push(player.deviceId);
+            //         }
+            //     });
+            // });
 
-            //alle deviceIds ophalen.
-            let deviceIds = [];
-            foundGame.teamIds.forEach(team => {
-                team.playerIds.forEach(player => {
-                    if (player.deviceId) {
-                        deviceIds.push(player.deviceId);
-                    }
-                });
-            });
+            // //websocket aanroepen om naar alle gebruikers te sturen dat er een antwoord goed was.
+            // var obj = {
+            //     type: 'event',
+            //     eventName: 'correctAnswer',
+            //     clients: deviceIds,
+            //     message: guessedLetters
+            // };
+            // app.eventEmit(JSON.stringify(obj));
 
-            //websocket aanroepen om naar alle gebruikers te sturen dat er een antwoord goed was.
-            var obj = {
-                type: 'event',
-                eventName: 'correctAnswer',
-                clients: deviceIds,
-                message: guessedLetters
-            };
-            app.eventEmit(JSON.stringify(obj));
-
-            res.status(200).send(guessedLetters);
+            res.status(200).json(guessedLetters);
         } else {
             res.status(400).send("wrong guess");
         }
