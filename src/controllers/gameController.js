@@ -108,6 +108,12 @@ module.exports = function (app) {
           foundGame.isStarted = true,
             foundGame.startTime = new Date().toString();
 
+          foundGame.teamIds.map(async (team) => {
+            team.guessedLetters = [];
+            console.log(team.guessedLetters);
+            await team.save();
+          });
+
           await foundGame.save();
 
           //alle deviceIds ophalen.
