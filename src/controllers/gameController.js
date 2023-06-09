@@ -110,7 +110,6 @@ module.exports = function (app) {
 
           foundGame.teamIds.map(async (team) => {
             team.guessedLetters = [];
-            console.log(team.guessedLetters);
             await team.save();
           });
 
