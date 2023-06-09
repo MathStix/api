@@ -24,14 +24,11 @@ module.exports = function (app) {
 
     function sendDataToClients(data) {
         let bodyJson = JSON.parse(data);
-        var j = 0;
 
         for (var i = 0; i < bodyJson.clients.length; i++) {
 
             const client = clients.get(bodyJson.clients[i].deviceId);
             if (client) {
-                j++
-                console.log('aantal gestuurd', j);
                 client.send(JSON.stringify({ teamId: bodyJson.clients[i].teamId, message: bodyJson.message }));
             }
         }
