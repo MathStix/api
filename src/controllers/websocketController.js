@@ -25,13 +25,13 @@ module.exports = function (app) {
     function sendDataToClients(data) {
         let bodyJson = JSON.parse(data);
 
-        bodyJson.clients.forEach(function (element) {
-            const client = clients.get(element.deviceId);
+        for (var i = 0; i < bodyJson.clients.length; i++) {
 
+            const client = clients.get(bodyJson.clients[i].deviceId);
             if (client) {
-                client.send(JSON.stringify({ teamId: element.teamId, message: bodyJson.message }));
+                client.send(JSON.stringify({ teamId: bodyJson.clients[i].teamId, message: bodyJson.message }));
             }
-        });
+        }
     }
 
     // Store the connected clients

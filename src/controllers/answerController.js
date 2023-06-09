@@ -5,7 +5,6 @@ let answers = require('../models/answer');
 const teams = require('../models/team');
 const games = require('../models/game');
 const exercises = require("../models/exercise");
-const { json } = require('body-parser');
 
 module.exports = function (app) {
 
@@ -44,6 +43,9 @@ module.exports = function (app) {
         
         // canvas: String
 
+        const JsonText = await JSON.parse(body.texts);
+        const JsonPhoto = await JSON.parse(body.photos);
+
         // Create answer.
         let answer = new answers({
             texts: body.texts,
@@ -53,13 +55,11 @@ module.exports = function (app) {
             canvas: body.canvas,
         });
 
-        const asJson = JSON.parse(body.texts);
-        
         let guessedLetters = [];
         const foundExercise = await exercises.findOne({ _id: body.exerciseId, });
         if (!foundExercise) return res.status(404).send("exercise not found");
 
-        if (asJson[0].toString() === foundExercise.answer) {
+        if ((JsonPhoto ?? []).length !== 0 || (!JsonText[0] || JsonText[0].toString() === foundExercise.answer) || body.canvas !== null) {
             const foundGame = await games.findOne({ _id: body.gameId, }).populate('teamIds');
             const foundTeam = await teams.findOne({ _id: body.teamId, });
 
@@ -96,10 +96,11 @@ module.exports = function (app) {
             //     message: guessedLetters
             // };
             // app.eventEmit(JSON.stringify(obj));
+            console.log(answer._id);
 
             res.status(200).json(guessedLetters);
         } else {
-            res.status(400).send("wrong guess");
+            res.status(400).send("wrong guess or already correct");
         }
 
         //Save answer to database.

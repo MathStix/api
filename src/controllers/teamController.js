@@ -163,8 +163,8 @@ module.exports = function (app) {
         let currentTeam = [];
         const now = new Date();
 
-        //elke foute guess telt 3 minuten straftijd erbij op en krijgt een guess cooldown van 4 minuten.
-        const extraTimePenalty = 3;
+        //elke foute guess telt 2 minuten straftijd erbij op en krijgt een guess cooldown van 4 minuten.
+        const extraTimePenalty = 2;
         const extraGuessCooldown = new Date(now.getTime() + 4 * 60000).toString();
 
         await games
@@ -201,15 +201,15 @@ module.exports = function (app) {
 
                 await currentTeam.save();
 
-                res.status(400).json("Wrong guess");
+                res.status(400).send("Wrong guess");
             }
             else {
                 //team heeft woord geraden, nog wat voor verzinnen.
-                res.status(200).json("Right guess");
+                res.status(200).json(currentTeam);
             }
         }
         else {
-            res.status(404).json("Wait out timepenalty");
+            res.status(404).send("Wait out timepenalty");
         }
     });
 }
