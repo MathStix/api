@@ -40,7 +40,7 @@ module.exports = function (app) {
         // teamId: String,
         // texts: String,
         // photos: String,
-        
+
         // canvas: String
 
         const JsonText = await JSON.parse(body.texts);
@@ -59,14 +59,14 @@ module.exports = function (app) {
         const foundExercise = await exercises.findOne({ _id: body.exerciseId, });
         if (!foundExercise) return res.status(404).send("exercise not found");
 
-        if ((JsonPhoto ?? []).length !== 0 || (!JsonText[0] || JsonText[0].toString() === foundExercise.answer) || body.canvas !== null) {
+        if (JsonText[0] != undefined && JsonText[0].toString() === foundExercise.answer || JsonPhoto[0] != undefined) {
             const foundGame = await games.findOne({ _id: body.gameId, }).populate('teamIds');
             const foundTeam = await teams.findOne({ _id: body.teamId, });
 
             if (!foundTeam || !foundGame) return res.status(404).send("Team or game not found");
 
             let letterPosition = returnLetter(foundTeam.guessedLetters, foundGame.word.length);
-            if(letterPosition !== null){
+            if (letterPosition !== null) {
                 foundTeam.guessedLetters.push(letterPosition);
             }
 

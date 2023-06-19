@@ -56,7 +56,7 @@ module.exports = function (app) {
                 //huidige Course ophalen.
                 await courses.findOne({ _id: currentGame.courseId })
                     .then((foundCourse) => {
-                        
+
                         currentCourse = foundCourse;
                     })
                     .catch((err) => {
@@ -160,6 +160,7 @@ module.exports = function (app) {
         // guessWord: String
 
         let word = "";
+        let currentGame = [];
         let currentTeam = [];
         const now = new Date();
 
@@ -172,6 +173,7 @@ module.exports = function (app) {
             .then(async (foundGame) => {
 
                 word = foundGame.word;
+                currentGame = foundGame;
 
                 await teams
                     .findOne({ _id: body.teamId })
@@ -204,7 +206,16 @@ module.exports = function (app) {
                 res.status(400).send("Wrong guess");
             }
             else {
-                //team heeft woord geraden, nog wat voor verzinnen.
+                var startGame = new Date(currentGame.startTime.toString());
+                var endGame = new Date();
+
+                var timeDiff = Math.abs(startGame - endGame);
+
+                var hours = Math.floor(timeDiff / (1000 * 60 * 60));
+                var minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+                currentTeam.finishTime = `Hours ${hours} Minutes ${minutes}`;
+                await currentTeam.save();
                 res.status(200).json(currentTeam);
             }
         }

@@ -53,7 +53,7 @@ module.exports = function (app) {
       });
   });
 
-  //Player een team laten joinen.
+  //Player een game laten joinen.
   app.post("/addplayer", async (req, res) => {
     let body = req.body;
     // Verwachte parameters:
@@ -125,7 +125,7 @@ module.exports = function (app) {
             });
           });
 
-          //websocket aanroepen om naar alle gebruikers te sturen dat de game gaat beginnen.
+          //websocket aanroepen om naar alle gebruikers te sturen dat de game gaat beginnen met een event.
           var obj = {
             type: 'event',
             eventName: 'startGame',

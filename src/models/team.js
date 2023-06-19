@@ -7,7 +7,8 @@ const teamSchema = new mongoose.Schema({
     unlockedExerciseIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Exercise', default: [] }],
     timePenalty: Number,
     guessCooldown: String,
-    guessedLetters: [Number]
+    guessedLetters: [Number],
+    finishTime: String,
     
 }, { collection: 'teams' });
 
